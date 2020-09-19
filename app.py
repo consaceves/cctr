@@ -1,9 +1,11 @@
 from flask import Flask
-app = Flask(__name__)
+from flask_sqlalchemy import SQLAlchemy
 
-@app.route('/')
-def hello():
-    return "Hello World!"
+db = SQLAlchemy()
 
-if __name__ == '__main__':
-    app.run()
+def create_app():
+    app = Flask(__name__)
+
+    db.init_app(app)
+
+    return app
