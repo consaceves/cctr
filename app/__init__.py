@@ -20,5 +20,6 @@ def create_app():
     app.register_blueprint(api.home.app)
     app.register_blueprint(api.dashboard.app)
     app.register_blueprint(api.user.app)
+    app.register_blueprint(api.workout.app)
 
     return app
