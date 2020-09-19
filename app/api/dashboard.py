@@ -20,5 +20,6 @@ past_workouts = [
 
 @app.route('/dashboard', methods=['GET'])
 def get_past_workouts():
-    if request.args['user_id']:
-        return jsonify({'past_workouts': past_workouts})
+    if not request.json or not 'user_id' in request.json:
+        abort(400)
+    return jsonify({'past_workouts': past_workouts})
