@@ -1,11 +1,24 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from app.api import *
+
+db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    db = SQLAlchemy(app)
-    app.register_blueprint(home.app)
-    app.register_blueprint(dashboard.app)
+    db.init_app(app)
+
+    appdir = os.path.abspath(os.path.dirname(__file__))
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(appdir, 'cctr.db')}"
+
+    with app.app_context():
+        from . import models
+        db.drop_all()
+        db.create_all()
+
+    from . import api
+    app.register_blueprint(api.home.app)
+    app.register_blueprint(api.dashboard.app)
+    app.register_blueprint(api.user.app)
 
     return app
