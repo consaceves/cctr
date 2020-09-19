@@ -8,4 +8,8 @@ def create_app():
 
     db.init_app(app)
 
+    from . import api
+    app.register_blueprint(api.home.app)
+    app.register_blueprint(api.dashboard.app)
+
     return app
