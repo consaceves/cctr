@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, abort
 from .. import models, db
+from .workout import get_performance_score
 
 app = Blueprint("user", __name__)
 
@@ -18,14 +19,22 @@ def create_user():
     if request.method=="POST":
         name = request.json.get("name")
         user_id = request.json.get("user_id")
-        dissability = request.json.get("dissability")
+        dissability = request.json.get("disability")
+        age = request.json.get("age")
+        gender = request.json.get("gender")
+
+        pushups = request.json.get("pushups")
+        situps = request.json.get("situps")
+        mile = request.json.get("mile")
+        pscore = get_performance_score(pushups, situps, mile)
 
         new_user = models.User(name=name,
                                 user_id=user_id,
-                                dissability=' '.join(map(str, dissability)))
+                                disability=' '.join(map(str, dissability)),
+                                pscore=pscore)
         db.session.add(new_user)
         db.session.commit()
-        return "User created"
+        return jsonify({})
     else: 
         user = models.User.query.filter_by(user_id=request.json["user_id"]).first()
         if user:
