@@ -28,5 +28,8 @@ def create_user():
         return "User created"
     else: 
         user = models.User.query.filter_by(user_id=request.json["user_id"]).first()
-        return jsonify(user_id=user.user_id,
+        if user:
+            return jsonify(user_id=user.user_id,
                        name=user.name)
+        else:
+            return jsonify(new_user=True)
