@@ -159,7 +159,7 @@ def get_intersections(disabilities, blacklist):
     for exercise in exercises:
         result = intersection(result, exercise)
 
-    return result;
+    return result
 
 
 def get_performance_score(pushups, situps, mile_time):
