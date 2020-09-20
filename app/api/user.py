@@ -27,4 +27,6 @@ def create_user():
         db.session.commit()
         return "User created"
     else: 
-        return "Get user"
+        user = models.User.query.filter_by(user_id=request.json["user_id"]).first()
+        return jsonify(user_id=user.user_id,
+                       name=user.name)
