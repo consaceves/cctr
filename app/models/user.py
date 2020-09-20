@@ -36,4 +36,7 @@ class User(db.Model):
     leg_stretch = Column(Integer, nullable=False, default=0)
     hip_stretch = Column(Integer, nullable=False, default=0)
     glute_bridges = Column(Integer, nullable=False, default=0)
-    disability = Column(String(100), nullable=False, default=0)
+    arm_circles = Column(Integer, nullable=False, default=0)
+    rowing = Column(Integer, nullable=False, default=0)
+    disabilities = Column(String(100), nullable=False, default=0)
+    blacklist = Column(String(100), nullable=False, default=0)

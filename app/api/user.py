@@ -18,7 +18,8 @@ def create_user():
     if request.method == "POST":
         name = request.json.get("name")
         user_id = request.json.get("user_id")
-        disability = request.json.get("disability")
+        disabilities = request.json.get("disabilities")
+        blacklist = request.json.get("blacklist")
         age = request.json.get("age")
         gender = request.json.get("gender")
 
@@ -29,7 +30,8 @@ def create_user():
 
         new_user = models.User(name=name,
                                user_id=user_id,
-                               disability=' '.join(map(str, disability)),
+                               disabilities=' '.join(map(str, disabilities)),
+                               blacklist=' '.join(map(str, blacklist)),
                                pscore=pscore)
         db.session.add(new_user)
         db.session.commit()

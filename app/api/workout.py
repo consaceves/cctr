@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request, abort
+from .. import models
 
 app = Blueprint("workout", __name__)
 
@@ -6,28 +7,28 @@ walking = ['walking', 'quads', 'hamstrings']
 biking = ['biking', 'quads', 'hamstrings']
 swimming = ['swimming', 'shoulders']
 elliptical = ['elliptical']
-resistance_bands = ['resistance bands']
+resistance_bands = ['resistance_bands']
 bench_press = ['bench press', 'pecs', 'triceps', 'delts', 'elbow', 'wrists', 'hands', 'shoulders']
 running = ['running', 'knees', 'quads', 'hamstrings']
-stair_climbing = ['stair climbing', 'knees', 'quads', 'hamstrings']
+stair_climbing = ['stair_climbing', 'knees', 'quads', 'hamstrings']
 pushups = ['pushups', 'pecs', 'triceps', 'abs', 'delts', 'elbows', 'wrists', 'shoulders']
 lunges = ['lunges', 'quads', 'hamstrings', 'glutes', 'hips', 'knees']
-sit_ups = ['sit ups', 'abs']
+sit_ups = ['sit_ups', 'abs']
 dips = ['dips', 'triceps', 'pecs', 'elbows', 'shoulders']
-weight_machines = ['weight machines']
-knee_extensions = ["knee extensions", "knees", 'quads', 'hamstrings']
+weight_machines = ['weight_machines']
+knee_extensions = ["knee_extensions", "knees", 'quads', 'hamstrings']
 squats = ['squats', 'quads', 'glutes', 'hips', 'abs', 'calves', 'hamstrings', 'back', 'knees']
 yoga = ['yoga']
-tai_chi = ['tai chi']
+tai_chi = ['tai_chi']
 gardening = ['gardening', 'back', 'shoulders']
-calf_raises = ['calf raises', 'calves', 'ankles']
-leg_raises = ['leg raises', 'hips', 'abs', 'quads', 'hamstrings']
-arm_stretch = ['arm stretch', 'elbow']
-leg_stretch = ['leg stretch', 'quads', 'hamstrings', 'knees']
-hip_stretch = ['hip stretch']
+calf_raises = ['calf_raises', 'calves', 'ankles']
+leg_raises = ['leg_raises', 'hips', 'abs', 'quads', 'hamstrings']
+arm_stretch = ['arm_stretch', 'elbow']
+leg_stretch = ['leg_stretch', 'quads', 'hamstrings', 'knees']
+hip_stretch = ['hip_stretch']
 
-glute_bridges = ['glute bridges', 'hips', 'abs', 'glutes', 'hamstrings', 'quads', 'knees']
-arm_circles = ['arm circles', 'shoulders']
+glute_bridges = ['glute_bridges', 'hips', 'abs', 'glutes', 'hamstrings', 'quads', 'knees']
+arm_circles = ['arm_circles', 'shoulders']
 rowing = ['rowing', 'elbows', 'knees', 'shoulders', 'quads', 'hamstrings', 'hands']
 
 # categories
@@ -46,10 +47,10 @@ rep_based = [resistance_bands, bench_press, pushups, lunges, sit_ups, dips, weig
 time_based = [walking, biking, swimming, elliptical, running, yoga, tai_chi, gardening, arm_stretch, leg_raises,
               hip_stretch, rowing]
 
-rep_based_exercises = ['resistance_bands', 'bench_press', 'pushups', 'lunges', 'sit ups', 'dips', 'weight machines',
-                       'knee extensions', ' calf raises', 'leg_raises', 'glute bridges', 'arm circles']
-time_based_exercises = ['walking', 'biking', 'swimming', 'elliptical', 'running', 'yoga', 'tai chi', 'gardening',
-                        'arm_stretch', 'leg stretch,', 'leg raises', 'hip stretch', 'rowing']
+rep_based_exercises = ['resistance_bands', 'bench_press', 'pushups', 'lunges', 'sit ups', 'dips', 'weight_machines',
+                       'knee_extensions', ' calf_raises', 'leg_raises', 'glute bridges', 'arm_circles']
+time_based_exercises = ['walking', 'biking', 'swimming', 'elliptical', 'running', 'yoga', 'tai_chi', 'gardening',
+                        'arm_stretch', 'leg_stretch,', 'leg_raises', 'hip_stretch', 'rowing']
 # Arthritis
 arthritis_affected = ['knees', 'hands', 'wrists', 'elbows']
 arthritis_needs = [cardio, low_impact, strength, flexibility, mind_and_body]
@@ -72,8 +73,8 @@ parkinsons_needs = [cardio, flexibility, functionality]
 
 def get_workout(input):
 
-    recommended_exercises = get_intersections(input['disabilities'], input['blacklist'])
-    result = get_recommended_workout(recommended_exercises)
+    recommended_exercises = get_intersections(input.disabilities.split(' '), input.blacklist.split(' '))
+    result = get_recommended_workout(recommended_exercises, input)
     return result
 
 def intersection(lst1, lst2):
@@ -124,10 +125,12 @@ def get_exercises(disability, blacklist):
     return exercise_list
 
 
-def get_recommended_workout(recommended_exercises):
+def get_recommended_workout(recommended_exercises, input):
     result = {}
+    #user_profile = jsonify(input)
+    user_profile = {x.name: getattr(input, x.name) for x in input.__table__.columns}
     for exercise in recommended_exercises:
-        intensity = get_intensity(get_performance_score(input['push ups'], input['sit ups'], input['mile']))
+        intensity = get_intensity(input.pscore)
         #print(user_profile[exercise])
         #print(intensity)
         currentIntensity = user_profile[exercise]
@@ -191,8 +194,6 @@ example_result = {'arm circles': ' 3 sets of 6', 'walking': '10 minutes', 'yoga'
 #print(result)
 
 @app.route('/workout', methods=['GET'])
-
-
 def get_new_workout():
     if not request.json:
         abort(400)
@@ -200,6 +201,6 @@ def get_new_workout():
     else:
         # FIX GET JSON FUNCTION I forgot what it was called lol
         #input = get.json()
-        result = get_workout(input)
-        print(result)
+        user = models.User.query.filter_by(user_id=request.json['user_id']).first()
+        result = get_workout(user)
         return jsonify(result)
