@@ -167,8 +167,15 @@ def get_intensity(pscore):
     else:
         return [6, 10]
 
-# sample
+
+
+
+
+# Example input
+# Expecting input in this form, or similar with the same keys
+# Make sure keys are spelled correctly, and note the space in push up and sit up
 input = {'disabilities' : ['md'], 'blacklist' : ['knees', 'elbows'], 'push ups' : 20, 'sit ups' : 40, 'mile' : 10}
+
 
 user_profile = {'disabilities': input['disabilities'], 'blacklist' : input['blacklist'], 'age': 0, 'pscore': get_performance_score(input['push ups'], input['sit ups'], input['mile']), 'walking': 0, 'biking': 0,
                     'swimming': 0, 'elliptical': 0, 'resistance bands': 0, 'bench press': 0, 'running': 0,
@@ -176,10 +183,15 @@ user_profile = {'disabilities': input['disabilities'], 'blacklist' : input['blac
                     'knee extensions': 0, 'squats': 0, 'yoga': 0, 'tai chi': 0, 'gardening': 0, 'calf raises': 0,
                     'leg raises': 0, 'arm stretch': 0, 'leg stretch': 0, 'hip stretch': 0, 'glute bridges': 0,
                     'arm circles': 0, 'rowing': 0}
-print(get_workout(input))
 
+# FOR DEMO
 example_result = {'arm circles': ' 3 sets of 6', 'walking': '10 minutes', 'yoga': '10 minutes', 'tai chi': '10 minutes', 'arm stretch': '10 minutes', 'hip stretch': '10 minutes', 'biking': '10 minutes', 'swimming': '10 minutes', 'elliptical': '10 minutes', 'bench press': '10 minutes', 'sit ups': ' 3 sets of 6', 'weight machines': ' 3 sets of 6', 'resistance bands': '10 minutes', 'gardening': '10 minutes'}
+
+#result = get_workout(input)
+#print(result)
+
 @app.route('/workout', methods=['GET'])
+
 
 def get_new_workout():
     if not request.json:
@@ -188,4 +200,6 @@ def get_new_workout():
     else:
         # FIX GET JSON FUNCTION I forgot what it was called lol
         #input = get.json()
-        return jsonify(get_workout(input))
+        result = get_workout(input)
+        print(result)
+        return jsonify(result)
