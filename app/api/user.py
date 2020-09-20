@@ -32,4 +32,4 @@ def create_user():
             return jsonify(user_id=user.user_id,
                        name=user.name)
         else:
-            return jsonify(new_user=True)
+            return jsonify({})
