@@ -1,27 +1,43 @@
 from flask import Blueprint, jsonify, request, abort
 from .. import models, db
+from .workout import get_performance_score
 
 app = Blueprint("user", __name__)
 
 test_user = {
     "name": "name1",
     "user_id": 123,
-    "dissability": ["arthritis", "als"]
+    "disability": ["arthritis", "als"]
 }
 
-
-@app.route('/user', methods=['POST'])
+@app.route('/user', methods=['GET', 'POST'])
 def create_user():
     if not request.json:
         abort(400)
-    
-    name = request.json.get("name")
-    user_id = request.json.get("user_id")
-    dissability = request.json.get("dissability")
 
-    new_user = models.User(name=name,
-                           user_id=user_id,
-                           dissability=' '.join(map(str, dissability)))
-    db.session.add(new_user)
-    db.session.commit()
-    return "User created"
+    if request.method == "POST":
+        name = request.json.get("name")
+        user_id = request.json.get("user_id")
+        disability = request.json.get("disability")
+        age = request.json.get("age")
+        gender = request.json.get("gender")
+
+        pushups = request.json.get("pushups")
+        situps = request.json.get("situps")
+        mile = request.json.get("mile")
+        pscore = get_performance_score(pushups, situps, mile)
+
+        new_user = models.User(name=name,
+                               user_id=user_id,
+                               disability=' '.join(map(str, disability)),
+                               pscore=pscore)
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({})
+    else:
+        user = models.User.query.filter_by(user_id=request.json["user_id"]).first()
+        if user:
+            return jsonify(user_id=user.user_id,
+                           name=user.name)
+        else:
+            return jsonify({})

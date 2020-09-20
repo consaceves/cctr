@@ -2,6 +2,37 @@ from flask import Blueprint, jsonify, request, abort
 
 app = Blueprint("workout", __name__)
 
+new_workout = [{"exercise": "tai-chi", "time": "8 min"}, {"exercise": "yoga", "time": "8 min"}]
+input = {'first time': False, 'disabilities': ['md'], 'push ups': 20, 'sit ups': 40, 'mile': 10, 'blacklist': ['knees']}
+
+@app.route('/workout', methods=['GET'])
+def get_new_workout():
+    if not request.json:
+        abort(400)
+
+    return get_
+    # call richard's script here, return DICT of exercises
+
+
+
+user_profile = {'disabilities' : [], 'age': 0, 'gender': '', 'pscore': 0, 'walking': 0, 'biking': 0, 'swimming': 0, 'elliptical': 0,
+                'resistance bands': 0, 'bench press': 0, 'running': 0,
+                'stair climbing': 0, 'pushups': 0, 'lunges': 0, 'sit ups': 0, 'dips': 0, 'weight machines': 0,
+                'knee extensions': 0, 'squats': 0, 'yoga': 0, 'tai chi': 0,
+                'gardening': 0, 'calf raises': 0, 'leg raises': 0, 'arm stretch': 0, 'leg stretch': 0, 'hip stretch': 0,
+                'glute bridges': 0, 'arm circles' : 0, 'rowing' : 0}
+
+
+user_profile2 = {'age': 0, 'gender': '', 'pscore': 0, 'walking': 0, 'biking': 0, 'swimming': 0, 'elliptical': 0,
+                'resistance bands': 0, 'bench press': 0, 'running': 0,
+                'stair climbing': 0, 'pushups': 0, 'lunges': 0, 'sit ups': 0, 'dips': 0, 'weight machines': 0,
+                'knee extensions': 0, 'squats': 0, 'yoga': 0, 'tai chi': 0,
+                'gardening': 0, 'calf raises': 0, 'leg raises': 0, 'arm stretch': 0, 'leg stretch': 0, 'hip stretch': 0,
+                'glute bridges': 0, 'arm circles' : 0, 'rowing' : 0}
+
+
+
+
 walking = ['walking', 'quads', 'hamstrings']
 biking = ['biking', 'quads', 'hamstrings']
 swimming = ['swimming', 'shoulders']
@@ -29,6 +60,8 @@ hip_stretch = ['hip stretch']
 glute_bridges = ['glute bridges', 'hips', 'abs', 'glutes', 'hamstrings', 'quads', 'knees']
 arm_circles = ['arm circles', 'shoulders']
 rowing = ['rowing', 'elbows', 'knees', 'shoulders', 'quads', 'hamstrings', 'hands']
+
+
 
 # categories
 
@@ -70,11 +103,6 @@ osteoporosis_needs = [strength, body_weight, flexibility, cardio]
 parkinsons_affected = []
 parkinsons_needs = [cardio, flexibility, functionality]
 
-def get_workout(input):
-
-    recommended_exercises = get_intersections(input['disabilities'], input['blacklist'])
-    result = get_recommended_workout(recommended_exercises)
-    return result
 
 def intersection(lst1, lst2):
     # Use of hybrid method
@@ -128,16 +156,11 @@ def get_recommended_workout(recommended_exercises):
     result = {}
     for exercise in recommended_exercises:
         intensity = get_intensity(get_performance_score(input['push ups'], input['sit ups'], input['mile']))
-        #print(user_profile[exercise])
-        #print(intensity)
-        currentIntensity = user_profile[exercise]
-        #maxIntensity = max(currentIntensity, intensity[0])
+        maxIntensity = max(user_profile['exercise'][0], intensity)
         if exercise in rep_based_exercises:
-            result[exercise] = " 3 sets of " + str(max(currentIntensity, intensity[0]))
+            result[exercise] = " 3 sets of " + str(maxIntensity)
         else:
-            result[exercise] = str(max(currentIntensity, intensity[1])) + " minutes"
-        #result[exercise] = str(maxIntensity) + " minutes"
-
+            result[exercise] = str(maxIntensity) + " minutes"
     return result
 
 
@@ -167,25 +190,18 @@ def get_intensity(pscore):
     else:
         return [6, 10]
 
-# sample
-input = {'disabilities' : ['md'], 'blacklist' : ['knees', 'elbows'], 'push ups' : 20, 'sit ups' : 40, 'mile' : 10}
 
-user_profile = {'disabilities': input['disabilities'], 'blacklist' : input['blacklist'], 'age': 0, 'pscore': get_performance_score(input['push ups'], input['sit ups'], input['mile']), 'walking': 0, 'biking': 0,
-                    'swimming': 0, 'elliptical': 0, 'resistance bands': 0, 'bench press': 0, 'running': 0,
-                    'stair climbing': 0, 'pushups': 0, 'lunges': 0, 'sit ups': 0, 'dips': 0, 'weight machines': 0,
-                    'knee extensions': 0, 'squats': 0, 'yoga': 0, 'tai chi': 0, 'gardening': 0, 'calf raises': 0,
-                    'leg raises': 0, 'arm stretch': 0, 'leg stretch': 0, 'hip stretch': 0, 'glute bridges': 0,
-                    'arm circles': 0, 'rowing': 0}
-print(get_workout(input))
+def get_workout(input):
+    result = {}
 
-example_result = {'arm circles': ' 3 sets of 6', 'walking': '10 minutes', 'yoga': '10 minutes', 'tai chi': '10 minutes', 'arm stretch': '10 minutes', 'hip stretch': '10 minutes', 'biking': '10 minutes', 'swimming': '10 minutes', 'elliptical': '10 minutes', 'bench press': '10 minutes', 'sit ups': ' 3 sets of 6', 'weight machines': ' 3 sets of 6', 'resistance bands': '10 minutes', 'gardening': '10 minutes'}
-@app.route('/workout', methods=['GET'])
-
-def get_new_workout():
-    if not request.json:
-        abort(400)
-
+    if input['first time'] is False:
+        result = {'arm circles': ' 3 sets of 6', 'walking': '10 minutes', 'yoga': '10 minutes', 'tai chi': '10 minutes',
+                  'arm stretch': '10 minutes', 'hip stretch': '10 minutes', 'biking': '10 minutes',
+                  'swimming': '10 minutes', 'elliptical': '10 minutes', 'bench press': '10 minutes',
+                  'pushups': ' 3 sets of 6', 'sit ups': ' 3 sets of 6', 'weight machines': ' 3 sets of 6',
+                  'resistance bands': '10 minutes', 'gardening': '10 minutes'}
     else:
-        # FIX GET JSON FUNCTION I forgot what it was called lol
-        #input = get.json()
-        return jsonify(get_workout(input))
+        recommended_exercises = get_intersections(input['disabilities'], input['blacklist'])
+        result = get_recommended_workout(recommended_exercises)
+
+    return result
